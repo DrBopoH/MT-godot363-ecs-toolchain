@@ -16,10 +16,10 @@ func physic(delta: float) -> void:
 func render(delta: float) -> void: render.update(delta)
 
 
-func open(position: GDScript, system: Functor, values: Dictionary) -> void:
+func open(position: GDScript, system: Functor, values: Array) -> void:
 	system.id = components.spawn()
 	bind(system)
-	for component in values: system.tables[component][system.id] = values[component]
+	for component in values: system.tables[component.get_script()][system.id] = component.value
 	for id in components.count:
 		if fits(system, id): subscribe(system, id)
 	pipelines[system.rate()].open(position, system)
@@ -48,16 +48,17 @@ func unsubscribe(system: Functor, id: int) -> void:
 	system.subscribers.erase(id)
 
 
-func spawn(values: Dictionary) -> int:
+func spawn(values: Array) -> int:
 	var id: int = components.spawn()
-	for component in values: add(id, component, values[component])
+	for component in values: add(id, component)
 	return id
 
-func add(id: int, component: GDScript, value) -> void:
-	components.declare(component)[id] = value
+func add(id: int, component: Reference) -> void:
+	var key: GDScript = component.get_script()
+	components.declare(key)[id] = component.value
 	for pipeline in pipelines.values():
 		for system in pipeline.systems:
-			if system.needs().has(component) and fits(system, id): subscribe(system, id)
+			if system.needs().has(key) and fits(system, id): subscribe(system, id)
 
 func remove(id: int, component: GDScript) -> void:
 	for pipeline in pipelines.values():
