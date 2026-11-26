@@ -9,8 +9,10 @@ func open(position: GDScript, system: Reference) -> void:
 	positions[position] = systems.size()
 	systems.append(system)
 
-func swap(position: GDScript, system: Reference) -> void:
+func swap(position: GDScript, system: Reference) -> Reference:
+	var old: Reference = systems[positions[position]]
 	systems[positions[position]] = system
+	return old
 
 
 func update(delta: float) -> void:

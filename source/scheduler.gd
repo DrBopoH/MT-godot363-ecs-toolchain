@@ -20,6 +20,12 @@ func open(position: GDScript, system: Functor, values: Dictionary) -> void:
 		if fits(system, id): system.subscribers.append(id)
 	pipelines[system.rate()].open(position, system)
 
+func swap(position: GDScript, system: Functor) -> void:
+	var old: Functor = pipelines[system.rate()].swap(position, system)
+	system.id = old.id
+	system.subscribers = old.subscribers
+	bind(system)
+
 func bind(system: Functor) -> void:
 	for component in system.needs() + system.owns(): system.tables[component] = components.declare(component)
 
