@@ -5,7 +5,6 @@ var components: Components = Components.new()
 var physic: Pipeline = Pipeline.new()
 var render: Pipeline = Pipeline.new()
 var pipelines: Dictionary = {Functor.PHYSIC: physic, Functor.RENDER: render}
-var systems: Array = []
 
 
 func physic(delta: float) -> void: physic.update(delta)
@@ -19,7 +18,6 @@ func open(position: GDScript, system: Functor, values: Dictionary) -> void:
 	for component in values: system.tables[component][system.id] = values[component]
 	for id in components.count:
 		if fits(system, id): system.subscribers.append(id)
-	systems.append(system)
 	pipelines[system.rate()].open(position, system)
 
 func bind(system: Functor) -> void:
@@ -34,6 +32,7 @@ func fits(system: Functor, id: int) -> bool:
 func spawn(values: Dictionary) -> int:
 	var id: int = components.spawn()
 	for component in values: components.declare(component)[id] = values[component]
-	for system in systems:
-		if fits(system, id): system.subscribers.append(id)
+	for pipeline in pipelines.values():
+		for system in pipeline.systems:
+			if fits(system, id): system.subscribers.append(id)
 	return id
