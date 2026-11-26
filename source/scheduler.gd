@@ -17,16 +17,23 @@ func open(position: GDScript, system: Functor, values: Dictionary) -> void:
 	system.id = components.spawn()
 	bind(system)
 	for component in values: system.tables[component][system.id] = values[component]
+	for id in components.count:
+		if fits(system, id): system.subscribers.append(id)
 	systems.append(system)
 	pipelines[system.rate()].open(position, system)
 
 func bind(system: Functor) -> void:
 	for component in system.needs() + system.owns(): system.tables[component] = components.declare(component)
 
+func fits(system: Functor, id: int) -> bool:
+	for component in system.needs():
+		if system.tables[component][id] == null: return false
+	return true
+
 
 func spawn(values: Dictionary) -> int:
 	var id: int = components.spawn()
 	for component in values: components.declare(component)[id] = values[component]
 	for system in systems:
-		if values.has_all(system.needs()): system.subscribers.append(id)
+		if fits(system, id): system.subscribers.append(id)
 	return id
