@@ -7,10 +7,11 @@ var tables: Dictionary = {}
 
 
 func declare(component: GDScript) -> Array:
-	var table: Array = []
-	table.resize(capacity)
-	tables[component] = table
-	return table
+	if not tables.has(component):
+		var table: Array = []
+		table.resize(capacity)
+		tables[component] = table
+	return tables[component]
 
 func table(component: GDScript) -> Array:
 	return tables[component]

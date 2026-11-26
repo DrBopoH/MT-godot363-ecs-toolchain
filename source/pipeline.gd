@@ -5,13 +5,13 @@ var positions: Dictionary = {}
 var systems: Array = []
 
 
-func open(position: String, system: Reference) -> void:
+func open(position: GDScript, system: Reference) -> void:
 	positions[position] = systems.size()
 	systems.append(system)
 
-func swap(position: String, system: Reference) -> void:
+func swap(position: GDScript, system: Reference) -> void:
 	systems[positions[position]] = system
 
 
-func update(components: Components, delta: float) -> void:
-	for system in systems: system.update(components, delta)
+func update(delta: float) -> void:
+	for system in systems: system.update(delta)
