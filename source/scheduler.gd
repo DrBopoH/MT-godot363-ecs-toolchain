@@ -37,8 +37,17 @@ func fits(system: Functor, id: int) -> bool:
 
 func spawn(values: Dictionary) -> int:
 	var id: int = components.spawn()
-	for component in values: components.declare(component)[id] = values[component]
+	for component in values: add(id, component, values[component])
+	return id
+
+func add(id: int, component: GDScript, value) -> void:
+	components.declare(component)[id] = value
 	for pipeline in pipelines.values():
 		for system in pipeline.systems:
-			if fits(system, id): system.subscribers.append(id)
-	return id
+			if system.needs().has(component) and fits(system, id): system.subscribers.append(id)
+
+func remove(id: int, component: GDScript) -> void:
+	for pipeline in pipelines.values():
+		for system in pipeline.systems:
+			if system.needs().has(component) and fits(system, id): system.subscribers.erase(id)
+	components.table(component)[id] = null
