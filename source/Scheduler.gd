@@ -14,7 +14,7 @@ func physic(delta: float) -> void:
 func render(delta: float) -> void: render.update(delta)
 
 
-func open(position: GDScript, system: Functor, values: Array) -> void:
+func open(position: GDScript, system: Functor, values) -> void:
 	system.id = composer.components.spawn()
 	bind(system)
 	for component in values: system.tables[component.get_script()][system.id] = component.value

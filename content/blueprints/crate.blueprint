@@ -1,0 +1,5 @@
+{
+	"Position": [0, 0, -5],
+	"Scene": "res://addons/MT-godot363-ecs-toolchain/examples/dispenser/crate.tscn",
+	"Lifetime": 0.8
+}

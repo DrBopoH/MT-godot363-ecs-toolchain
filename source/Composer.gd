@@ -41,7 +41,7 @@ func unsubscribe(system: Functor, id: int) -> void:
 	system.subscribers.erase(id)
 
 
-func spawn(values: Array) -> int:
+func spawn(values) -> int:
 	var id: int = components.spawn()
 	for component in values: add(id, component)
 	return id
