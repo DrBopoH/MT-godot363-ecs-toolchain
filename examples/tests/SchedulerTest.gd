@@ -27,7 +27,6 @@ class Chase:
 	extends Functor
 	var released: Array = []
 	func needs() -> Array: return [Pos, Aim]
-	func rate() -> int: return PHYSIC
 	func exit(id: int) -> void: released.append([id, tables[Pos][tables[Aim][id]]])
 
 class Bang:
@@ -39,14 +38,12 @@ class Hearer:
 	extends Functor
 	var heard: Array = []
 	func needs() -> Array: return [Bang]
-	func rate() -> int: return PHYSIC
 	func update(_delta: float) -> void:
 		for subscriber in subscribers: heard.append(tables[Bang][subscriber])
 
 class Shooter:
 	extends Functor
 	func owns() -> Array: return [Pos]
-	func rate() -> int: return PHYSIC
 	func update(_delta: float) -> void:
 		if tables[Pos][id] == 0.0: requests.spawning.append([Bang.new(7.0)])
 		tables[Pos][id]+= 1.0
@@ -55,7 +52,6 @@ class Shift:
 	extends Functor
 	func needs() -> Array: return [Pos]
 	func owns() -> Array: return [Grav]
-	func rate() -> int: return PHYSIC
 	func update(_delta: float) -> void:
 		var positions: Array = tables[Pos]
 		for subscriber in subscribers: positions[subscriber]+= tables[Grav][id]
@@ -69,12 +65,10 @@ class ReverseShift:
 class Tagged:
 	extends Functor
 	func needs() -> Array: return [Pos, Tag]
-	func rate() -> int: return PHYSIC
 
 class Reaper:
 	extends Functor
 	func needs() -> Array: return [Pos]
-	func rate() -> int: return PHYSIC
 	func update(_delta: float) -> void:
 		for subscriber in subscribers:
 			if tables[Pos][subscriber] >= 4.0: requests.dying.append(subscriber)
@@ -84,7 +78,6 @@ class Undertaker:
 	var seen: Array = []
 	func needs() -> Array: return [Tag]
 	func uses() -> Array: return [Pos]
-	func rate() -> int: return RENDER
 	func exit(id: int) -> void: seen.append([id, tables[Pos][id]])
 
 class Emitter:
@@ -92,13 +85,11 @@ class Emitter:
 	var exits: int = 0
 	func exit(_id: int) -> void: exits+= 1
 	func owns() -> Array: return [Pos]
-	func rate() -> int: return PHYSIC
 	func update(_delta: float) -> void: requests.spawning.append([Pos.new(tables[Pos][id]), Tag.new(true)])
 
 class Tagger:
 	extends Functor
 	func needs() -> Array: return [Pos]
-	func rate() -> int: return PHYSIC
 	func update(_delta: float) -> void:
 		for subscriber in subscribers:
 			if tables[Pos][subscriber] >= 2.0: requests.appearing.append([subscriber, Tag.new(true)])
@@ -107,7 +98,6 @@ class Witness:
 	extends Functor
 	var seen: Array = []
 	func needs() -> Array: return [Pos]
-	func rate() -> int: return RENDER
 	func enter(id: int) -> void: seen.append(["enter", id, tables[Pos][id]])
 	func exit(id: int) -> void: seen.append(["exit", id, tables[Pos][id]])
 

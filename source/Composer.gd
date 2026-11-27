@@ -6,11 +6,11 @@ extends Reference
 
 var components: Components = Components.new()
 var requests: Requests = Requests.new()
-var pipelines: Dictionary
+var pipeline: Pipeline
 var expiring: Array = []
 
 
-func _init(_pipelines: Dictionary) -> void: pipelines = _pipelines
+func _init(_pipeline: Pipeline) -> void: pipeline = _pipeline
 
 
 func flush() -> void:
@@ -53,14 +53,12 @@ func add(id: int, component: Reference) -> void:
 	var key: GDScript = component.get_script()
 	components.declare(key)[id] = component.value
 	if components.events.has(key) and not expiring.has(id): expiring.append(id)
-	for pipeline in pipelines.values():
-		for system in pipeline.systems:
-			if system.needs().has(key) and fits(system, id): subscribe(system, id)
+	for system in pipeline.systems:
+		if system.needs().has(key) and fits(system, id): subscribe(system, id)
 
 func remove(id: int, component: GDScript) -> void:
-	for pipeline in pipelines.values():
-		for system in pipeline.systems:
-			if system.needs().has(component) and fits(system, id): unsubscribe(system, id)
+	for system in pipeline.systems:
+		if system.needs().has(component) and fits(system, id): unsubscribe(system, id)
 	components.table(component)[id] = null
 
 func kill(id: int) -> void:
@@ -69,8 +67,7 @@ func kill(id: int) -> void:
 		var referrers: Array = components.tables[link]
 		for referrer in components.count:
 			if referrers[referrer] == id: remove(referrer, link)
-	for pipeline in pipelines.values():
-		for system in pipeline.systems:
-			if fits(system, id): unsubscribe(system, id)
+	for system in pipeline.systems:
+		if fits(system, id): unsubscribe(system, id)
 	for component in components.tables: components.tables[component][id] = null
 	components.release(id)

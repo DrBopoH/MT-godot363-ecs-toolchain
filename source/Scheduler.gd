@@ -4,17 +4,13 @@
 class_name Scheduler
 extends Reference
 
-var physic: Pipeline = Pipeline.new()
-var render: Pipeline = Pipeline.new()
-var pipelines: Dictionary = {Functor.PHYSIC: physic, Functor.RENDER: render}
-var composer: Composer = Composer.new(pipelines)
+var pipeline: Pipeline = Pipeline.new()
+var composer: Composer = Composer.new(pipeline)
 
 
 func physic(delta: float) -> void:
-	physic.update(delta)
+	pipeline.update(delta)
 	composer.flush()
-
-func render(delta: float) -> void: render.update(delta)
 
 
 func open(position: GDScript, system: Functor, values) -> void:
@@ -22,10 +18,10 @@ func open(position: GDScript, system: Functor, values) -> void:
 	bind(system)
 	for component in values: system.tables[component.get_script()][system.id] = component.value
 	composer.adopt(system)
-	pipelines[system.rate()].open(position, system)
+	pipeline.open(position, system)
 
 func swap(position: GDScript, system: Functor) -> void:
-	var old: Functor = pipelines[system.rate()].swap(position, system)
+	var old: Functor = pipeline.swap(position, system)
 	system.id = old.id
 	system.subscribers = old.subscribers
 	bind(system)

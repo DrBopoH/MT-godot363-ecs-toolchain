@@ -6,5 +6,3 @@ extends Functor
 
 
 func needs() -> Array: return [Orientation, Proxy]
-
-func rate() -> int: return PHYSIC

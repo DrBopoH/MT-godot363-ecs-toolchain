@@ -20,8 +20,8 @@ Changed
 - Actuators run on the physics tick, so nodes move only there; turn on `physics/common/physics_interpolation` in the project for smooth display. `DirectTranslator` places a new body and resets its interpolation on `enter`.
 - `BlueprintLoader` and `BlueprintSaver` are `tool` scripts and work in the editor.
 
-Deprecated
-- The `RENDER` rate and `Scheduler.render`: frame-rate display is replaced by physics interpolation. Kept until a real use appears.
+Removed
+- The `RENDER` rate, `rate()` in the system contract and `Scheduler.render`: one pipeline on the physics tick; smooth display comes from physics interpolation (a look test showed 20 ticks with interpolation beat 60 without). Breaking: families drop `rate()`, seeds drop `_process`.
 
 ## Build 2 alpha — Entity lifecycle and blueprints (v1.a2.17)
 

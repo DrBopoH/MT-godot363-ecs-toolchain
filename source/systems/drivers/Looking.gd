@@ -8,5 +8,3 @@ extends Functor
 func needs() -> Array: return [Axes, Orientation]
 
 func owns() -> Array: return [Trigger, Sensitivity, PitchLimits]
-
-func rate() -> int: return PHYSIC

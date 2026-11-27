@@ -8,5 +8,3 @@ extends Functor
 func needs() -> Array: return [Held, Direction]
 
 func owns() -> Array: return [Directions]
-
-func rate() -> int: return PHYSIC

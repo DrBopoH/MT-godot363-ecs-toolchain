@@ -6,5 +6,3 @@ extends Functor
 
 
 func needs() -> Array: return [Controlled, Held, Pressed, Released, Axes]
-
-func rate() -> int: return PHYSIC

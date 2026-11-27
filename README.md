@@ -23,8 +23,8 @@ To export `*.blueprint` files, add `*.blueprint` to the export filter for non-re
 |---|---|
 | entity | a number |
 | component | a class with a typed `value`; the class is the key, plain values live in arrays by entity number |
-| system | a `Functor`; a family base class declares `needs` (subscription), `owns` (the system's own parameters), `uses` (other data it touches) and `rate` (physics or render); an implementation only writes behaviour |
-| `Scheduler` | orchestration: physics and render pipelines, `open` and hot `swap` of systems |
+| system | a `Functor`; a family base class declares `needs` (subscription), `owns` (the system's own parameters), `uses` (other data it touches); an implementation only writes behaviour |
+| `Scheduler` | orchestration: one pipeline run on the physics tick, `open` and hot `swap` of systems |
 | `Composer` | entity composition: `spawn`, `add`, `remove`, `kill`; subscribes entities to systems by their components |
 | `Requests` | queues systems use to ask for changes (`spawning`, `appearing`, `dying`); applied after the physics tick |
 | `Link` | base for components that reference another entity; links are cut before the target dies |
@@ -50,8 +50,6 @@ func _ready() -> void:
 	scheduler.composer.spawn(CRATE)
 
 func _physics_process(delta: float) -> void: scheduler.physic(delta)
-
-func _process(delta: float) -> void: scheduler.render(delta)
 ```
 
 ```json
@@ -70,8 +68,6 @@ extends Functor
 
 
 func needs() -> Array: return [Lifetime]
-
-func rate() -> int: return PHYSIC
 ```
 
 ```gdscript

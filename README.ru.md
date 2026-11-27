@@ -23,8 +23,8 @@ git submodule add https://github.com/DrBopoH/MT-godot363-ecs-toolchain addons/MT
 |---|---|
 | сущность | номер |
 | компонент | класс с типизированным `value`; класс — ключ, простые значения лежат в массивах по номеру сущности |
-| система | `Functor`; базовый класс семейства объявляет `needs` (подписка), `owns` (параметры самой системы), `uses` (другие данные, которые она трогает) и `rate` (физика или кадр); реализация пишет только поведение |
-| `Scheduler` | оркестрация: пайплайны физики и кадра, `open` и горячий `swap` систем |
+| система | `Functor`; базовый класс семейства объявляет `needs` (подписка), `owns` (параметры самой системы), `uses` (другие данные, которые она трогает); реализация пишет только поведение |
+| `Scheduler` | оркестрация: один пайплайн на физическом тике, `open` и горячий `swap` систем |
 | `Composer` | состав сущностей: `spawn`, `add`, `remove`, `kill`; подписывает сущности на системы по их компонентам |
 | `Requests` | очереди, через которые системы просят изменений (`spawning`, `appearing`, `dying`); выполняются после физического тика |
 | `Link` | база для компонентов-ссылок на другую сущность; ссылки снимаются до смерти цели |
@@ -50,8 +50,6 @@ func _ready() -> void:
 	scheduler.composer.spawn(CRATE)
 
 func _physics_process(delta: float) -> void: scheduler.physic(delta)
-
-func _process(delta: float) -> void: scheduler.render(delta)
 ```
 
 ```json
@@ -70,8 +68,6 @@ extends Functor
 
 
 func needs() -> Array: return [Lifetime]
-
-func rate() -> int: return PHYSIC
 ```
 
 ```gdscript

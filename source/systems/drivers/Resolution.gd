@@ -8,5 +8,3 @@ extends Functor
 func needs() -> Array: return [Held, Released, Durations, Clicked, Holding]
 
 func owns() -> Array: return [Mask, Threshold]
-
-func rate() -> int: return PHYSIC
