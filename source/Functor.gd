@@ -8,6 +8,7 @@ var subscribers: Array = []
 var tables: Dictionary = {}
 var dying: Array = []
 var appearing: Array = []
+var spawning: Array = []
 
 
 func needs() -> Array: return []

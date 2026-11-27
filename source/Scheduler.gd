@@ -7,10 +7,13 @@ var render: Pipeline = Pipeline.new()
 var pipelines: Dictionary = {Functor.PHYSIC: physic, Functor.RENDER: render}
 var dying: Array = []
 var appearing: Array = []
+var spawning: Array = []
 
 
 func physic(delta: float) -> void:
 	physic.update(delta)
+	for values in spawning: spawn(values)
+	spawning.clear()
 	for entry in appearing: add(entry[0], entry[1])
 	appearing.clear()
 	for id in dying: kill(id)
@@ -37,6 +40,7 @@ func bind(system: Functor) -> void:
 	for component in system.needs() + system.owns() + system.uses(): system.tables[component] = components.declare(component)
 	system.dying = dying
 	system.appearing = appearing
+	system.spawning = spawning
 
 func fits(system: Functor, id: int) -> bool:
 	for component in system.needs():

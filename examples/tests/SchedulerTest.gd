@@ -51,6 +51,12 @@ class Undertaker:
 	func rate() -> int: return RENDER
 	func exit(id: int) -> void: seen.append([id, tables[Pos][id]])
 
+class Emitter:
+	extends Functor
+	func owns() -> Array: return [Pos]
+	func rate() -> int: return PHYSIC
+	func update(_delta: float) -> void: spawning.append([Pos.new(tables[Pos][id]), Tag.new(true)])
+
 class Tagger:
 	extends Functor
 	func needs() -> Array: return [Pos]
@@ -150,3 +156,13 @@ func test_kill_exits_with_whole_entity_and_uses_does_not_subscribe() -> bool:
 	var subscribed: bool = undertaker.subscribers == [tagged]
 	scheduler.kill(tagged)
 	return subscribed and undertaker.seen == [[tagged, 7.0]] and shift.subscribers == [bare] and scheduler.components.table(Pos)[tagged] == null
+
+func test_spawning_creates_entities_after_tick() -> bool:
+	var scheduler: Scheduler = Scheduler.new()
+	var tagged: Tagged = Tagged.new()
+	scheduler.open(Tagged, tagged, [])
+	scheduler.open(Emitter, Emitter.new(), [Pos.new(9.0)])
+	var before: int = scheduler.components.count
+	scheduler.physic(0.0)
+	var born: int = scheduler.components.count - 1
+	return scheduler.components.count == before + 1 and tagged.subscribers == [born] and scheduler.components.table(Pos)[born] == 9.0
