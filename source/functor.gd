@@ -7,6 +7,7 @@ var id: int = 0
 var subscribers: Array = []
 var tables: Dictionary = {}
 var dying: Array = []
+var appearing: Array = []
 
 
 func needs() -> Array: return []

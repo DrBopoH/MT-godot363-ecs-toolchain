@@ -6,10 +6,13 @@ var physic: Pipeline = Pipeline.new()
 var render: Pipeline = Pipeline.new()
 var pipelines: Dictionary = {Functor.PHYSIC: physic, Functor.RENDER: render}
 var dying: Array = []
+var appearing: Array = []
 
 
 func physic(delta: float) -> void:
 	physic.update(delta)
+	for entry in appearing: add(entry[0], entry[1])
+	appearing.clear()
 	for id in dying: kill(id)
 	dying.clear()
 
@@ -33,6 +36,7 @@ func swap(position: GDScript, system: Functor) -> void:
 func bind(system: Functor) -> void:
 	for component in system.needs() + system.owns(): system.tables[component] = components.declare(component)
 	system.dying = dying
+	system.appearing = appearing
 
 func fits(system: Functor, id: int) -> bool:
 	for component in system.needs():

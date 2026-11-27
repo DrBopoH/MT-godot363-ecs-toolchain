@@ -43,6 +43,14 @@ class Reaper:
 		for subscriber in subscribers:
 			if tables[Pos][subscriber] >= 4.0: dying.append(subscriber)
 
+class Tagger:
+	extends Functor
+	func needs() -> Array: return [Pos]
+	func rate() -> int: return PHYSIC
+	func update(_delta: float) -> void:
+		for subscriber in subscribers:
+			if tables[Pos][subscriber] >= 2.0: appearing.append([subscriber, Tag.new(true)])
+
 class Witness:
 	extends Functor
 	var seen: Array = []
@@ -112,3 +120,13 @@ func test_enter_and_exit_see_data() -> bool:
 	var entity: int = scheduler.spawn([Pos.new(3.0)])
 	scheduler.remove(entity, Pos)
 	return witness.seen == [["enter", entity, 3.0], ["exit", entity, 3.0]]
+
+func test_appearing_adds_after_tick_before_dying() -> bool:
+	var scheduler: Scheduler = Scheduler.new()
+	var tagged: Tagged = Tagged.new()
+	scheduler.open(Shift, Shift.new(), [Grav.new(2.0)])
+	scheduler.open(Tagger, Tagger.new(), [])
+	scheduler.open(Tagged, tagged, [])
+	var entity: int = scheduler.spawn([Pos.new(0.0)])
+	scheduler.physic(0.0)
+	return tagged.subscribers == [entity] and scheduler.components.table(Tag)[entity] == true
