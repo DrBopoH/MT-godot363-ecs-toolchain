@@ -1,0 +1,11 @@
+{
+	"Bindings": {
+		"forward": ["W", "Up"],
+		"back": ["S", "Down"],
+		"left": ["A", "Left"],
+		"right": ["D", "Right"],
+		"fire": ["Mouse_L"],
+		"aim": ["Mouse_R"],
+		"look": ["Motion"]
+	}
+}
