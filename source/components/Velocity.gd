@@ -1,3 +1,4 @@
+class_name Velocity
 extends Reference
 
 var value: Vector3

@@ -1,3 +1,4 @@
+class_name Proxy
 extends Reference
 
 var value: Spatial

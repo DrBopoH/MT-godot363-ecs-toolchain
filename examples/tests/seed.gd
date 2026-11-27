@@ -1,6 +1,6 @@
 extends Node
 
-const suites: Array = [preload("../../source/tests/scheduler_test.gd")]
+const suites: Array = [preload("SchedulerTest.gd")]
 
 
 func _ready() -> void:

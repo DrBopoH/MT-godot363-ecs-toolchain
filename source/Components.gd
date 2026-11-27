@@ -4,6 +4,9 @@ extends Reference
 var capacity: int = 1024
 var count: int = 0
 var tables: Dictionary = {}
+var free: Array = []
+var links: Array = []
+var events: Array = []
 
 
 func declare(component: GDScript) -> Array:
@@ -11,6 +14,8 @@ func declare(component: GDScript) -> Array:
 		var table: Array = []
 		table.resize(capacity)
 		tables[component] = table
+		if component.get_base_script() == Link: links.append(component)
+		if component.get_base_script() == Event: events.append(component)
 	return tables[component]
 
 func table(component: GDScript) -> Array:
@@ -18,6 +23,14 @@ func table(component: GDScript) -> Array:
 
 
 func spawn() -> int:
+	if not free.empty(): return free.pop_back()
+	if count == capacity: grow()
 	var id: int = count
 	count+= 1
 	return id
+
+func release(id: int) -> void: free.append(id)
+
+func grow() -> void:
+	capacity*= 2
+	for component in tables: tables[component].resize(capacity)
