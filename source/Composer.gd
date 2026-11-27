@@ -4,12 +4,16 @@ extends Reference
 var components: Components = Components.new()
 var requests: Requests = Requests.new()
 var pipelines: Dictionary
+var expiring: Array = []
 
 
 func _init(_pipelines: Dictionary) -> void: pipelines = _pipelines
 
 
 func flush() -> void:
+	var expired: Array = expiring
+	expiring = []
+	for id in expired: kill(id)
 	for values in requests.spawning: spawn(values)
 	requests.spawning.clear()
 	for entry in requests.appearing: add(entry[0], entry[1])
@@ -45,6 +49,7 @@ func spawn(values: Array) -> int:
 func add(id: int, component: Reference) -> void:
 	var key: GDScript = component.get_script()
 	components.declare(key)[id] = component.value
+	if components.events.has(key) and not expiring.has(id): expiring.append(id)
 	for pipeline in pipelines.values():
 		for system in pipeline.systems:
 			if system.needs().has(key) and fits(system, id): subscribe(system, id)
@@ -56,6 +61,7 @@ func remove(id: int, component: GDScript) -> void:
 	components.table(component)[id] = null
 
 func kill(id: int) -> void:
+	if components.free.has(id): return
 	for link in components.links:
 		var referrers: Array = components.tables[link]
 		for referrer in components.count:

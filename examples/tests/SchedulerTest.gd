@@ -27,6 +27,27 @@ class Chase:
 	func rate() -> int: return PHYSIC
 	func exit(id: int) -> void: released.append([id, tables[Pos][tables[Aim][id]]])
 
+class Bang:
+	extends Event
+	var value: float
+	func _init(_value: float) -> void: value = _value
+
+class Hearer:
+	extends Functor
+	var heard: Array = []
+	func needs() -> Array: return [Bang]
+	func rate() -> int: return PHYSIC
+	func update(_delta: float) -> void:
+		for subscriber in subscribers: heard.append(tables[Bang][subscriber])
+
+class Shooter:
+	extends Functor
+	func owns() -> Array: return [Pos]
+	func rate() -> int: return PHYSIC
+	func update(_delta: float) -> void:
+		if tables[Pos][id] == 0.0: requests.spawning.append([Bang.new(7.0)])
+		tables[Pos][id]+= 1.0
+
 class Shift:
 	extends Functor
 	func needs() -> Array: return [Pos]
@@ -220,3 +241,25 @@ func test_tables_double_when_ids_run_out() -> bool:
 	var second: int = scheduler.composer.spawn([Pos.new(10.0)])
 	scheduler.physic(0.0)
 	return scheduler.composer.components.capacity == 4 and shift.subscribers == [first, second] and scheduler.composer.components.table(Pos)[second] == 11.0 and shift.tables[Pos].size() == 4
+
+func test_events_live_exactly_one_tick() -> bool:
+	var scheduler: Scheduler = Scheduler.new()
+	var hearer: Hearer = Hearer.new()
+	scheduler.open(Shooter, Shooter.new(), [Pos.new(0.0)])
+	scheduler.open(Hearer, hearer, [])
+	scheduler.physic(0.0)
+	var born: bool = hearer.subscribers.size() == 1 and hearer.heard.empty()
+	scheduler.physic(0.0)
+	var heard_once: bool = hearer.heard == [7.0] and hearer.subscribers.empty()
+	scheduler.physic(0.0)
+	return born and heard_once and hearer.heard == [7.0]
+
+func test_double_death_frees_the_id_once() -> bool:
+	var scheduler: Scheduler = Scheduler.new()
+	var entity: int = scheduler.composer.spawn([Pos.new(0.0)])
+	scheduler.composer.requests.dying.append(entity)
+	scheduler.composer.requests.dying.append(entity)
+	scheduler.physic(0.0)
+	var first: int = scheduler.composer.spawn([Pos.new(1.0)])
+	var second: int = scheduler.composer.spawn([Pos.new(2.0)])
+	return first == entity and second != entity
