@@ -72,6 +72,10 @@ func remove(id: int, component: GDScript) -> void:
 	components.table(component)[id] = null
 
 func kill(id: int) -> void:
+	for link in components.links:
+		var referrers: Array = components.tables[link]
+		for referrer in components.count:
+			if referrers[referrer] == id: remove(referrer, link)
 	for pipeline in pipelines.values():
 		for system in pipeline.systems:
 			if fits(system, id): unsubscribe(system, id)

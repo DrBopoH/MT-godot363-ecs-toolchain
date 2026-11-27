@@ -15,6 +15,18 @@ class Tag:
 	var value: bool
 	func _init(_value: bool) -> void: value = _value
 
+class Aim:
+	extends Link
+	var value: int
+	func _init(_value: int) -> void: value = _value
+
+class Chase:
+	extends Functor
+	var released: Array = []
+	func needs() -> Array: return [Pos, Aim]
+	func rate() -> int: return PHYSIC
+	func exit(id: int) -> void: released.append([id, tables[Pos][tables[Aim][id]]])
+
 class Shift:
 	extends Functor
 	func needs() -> Array: return [Pos]
@@ -186,3 +198,15 @@ func test_open_without_needs_subscribes_nobody() -> bool:
 	var other: int = scheduler.spawn([Pos.new(2.0)])
 	scheduler.kill(other)
 	return emitter.subscribers.empty() and emitter.exits == 0
+
+func test_killing_a_target_cuts_links_to_it_first() -> bool:
+	var scheduler: Scheduler = Scheduler.new()
+	var chase: Chase = Chase.new()
+	scheduler.open(Chase, chase, [])
+	var anchor: int = scheduler.spawn([Pos.new(4.0)])
+	var body: int = scheduler.spawn([Pos.new(0.0), Aim.new(anchor)])
+	var bystander: int = scheduler.spawn([Pos.new(1.0)])
+	var linked: bool = chase.subscribers == [body]
+	scheduler.kill(anchor)
+	var reborn: int = scheduler.spawn([Pos.new(9.0)])
+	return linked and chase.released == [[body, 4.0]] and chase.subscribers.empty() and scheduler.components.table(Aim)[body] == null and scheduler.components.table(Pos)[body] == 0.0 and reborn == anchor

@@ -5,6 +5,7 @@ var capacity: int = 1024
 var count: int = 0
 var tables: Dictionary = {}
 var free: Array = []
+var links: Array = []
 
 
 func declare(component: GDScript) -> Array:
@@ -12,6 +13,7 @@ func declare(component: GDScript) -> Array:
 		var table: Array = []
 		table.resize(capacity)
 		tables[component] = table
+		if component.get_base_script() == Link: links.append(component)
 	return tables[component]
 
 func table(component: GDScript) -> Array:
