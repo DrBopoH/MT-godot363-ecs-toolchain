@@ -210,3 +210,13 @@ func test_killing_a_target_cuts_links_to_it_first() -> bool:
 	scheduler.kill(anchor)
 	var reborn: int = scheduler.spawn([Pos.new(9.0)])
 	return linked and chase.released == [[body, 4.0]] and chase.subscribers.empty() and scheduler.components.table(Aim)[body] == null and scheduler.components.table(Pos)[body] == 0.0 and reborn == anchor
+
+func test_tables_double_when_ids_run_out() -> bool:
+	var scheduler: Scheduler = Scheduler.new()
+	scheduler.components.capacity = 2
+	var shift: Shift = Shift.new()
+	scheduler.open(Shift, shift, [Grav.new(1.0)])
+	var first: int = scheduler.spawn([Pos.new(0.0)])
+	var second: int = scheduler.spawn([Pos.new(10.0)])
+	scheduler.physic(0.0)
+	return scheduler.components.capacity == 4 and shift.subscribers == [first, second] and scheduler.components.table(Pos)[second] == 11.0 and shift.tables[Pos].size() == 4

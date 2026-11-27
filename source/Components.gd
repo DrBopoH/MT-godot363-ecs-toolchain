@@ -22,8 +22,13 @@ func table(component: GDScript) -> Array:
 
 func spawn() -> int:
 	if not free.empty(): return free.pop_back()
+	if count == capacity: grow()
 	var id: int = count
 	count+= 1
 	return id
 
 func release(id: int) -> void: free.append(id)
+
+func grow() -> void:
+	capacity*= 2
+	for component in tables: tables[component].resize(capacity)
