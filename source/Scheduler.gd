@@ -5,19 +5,17 @@ var components: Components = Components.new()
 var physic: Pipeline = Pipeline.new()
 var render: Pipeline = Pipeline.new()
 var pipelines: Dictionary = {Functor.PHYSIC: physic, Functor.RENDER: render}
-var dying: Array = []
-var appearing: Array = []
-var spawning: Array = []
+var requests: Requests = Requests.new()
 
 
 func physic(delta: float) -> void:
 	physic.update(delta)
-	for values in spawning: spawn(values)
-	spawning.clear()
-	for entry in appearing: add(entry[0], entry[1])
-	appearing.clear()
-	for id in dying: kill(id)
-	dying.clear()
+	for values in requests.spawning: spawn(values)
+	requests.spawning.clear()
+	for entry in requests.appearing: add(entry[0], entry[1])
+	requests.appearing.clear()
+	for id in requests.dying: kill(id)
+	requests.dying.clear()
 
 func render(delta: float) -> void: render.update(delta)
 
@@ -38,9 +36,7 @@ func swap(position: GDScript, system: Functor) -> void:
 
 func bind(system: Functor) -> void:
 	for component in system.needs() + system.owns() + system.uses(): system.tables[component] = components.declare(component)
-	system.dying = dying
-	system.appearing = appearing
-	system.spawning = spawning
+	system.requests = requests
 
 func fits(system: Functor, id: int) -> bool:
 	for component in system.needs():

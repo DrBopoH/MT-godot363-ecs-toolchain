@@ -41,7 +41,7 @@ class Reaper:
 	func rate() -> int: return PHYSIC
 	func update(_delta: float) -> void:
 		for subscriber in subscribers:
-			if tables[Pos][subscriber] >= 4.0: dying.append(subscriber)
+			if tables[Pos][subscriber] >= 4.0: requests.dying.append(subscriber)
 
 class Undertaker:
 	extends Functor
@@ -55,7 +55,7 @@ class Emitter:
 	extends Functor
 	func owns() -> Array: return [Pos]
 	func rate() -> int: return PHYSIC
-	func update(_delta: float) -> void: spawning.append([Pos.new(tables[Pos][id]), Tag.new(true)])
+	func update(_delta: float) -> void: requests.spawning.append([Pos.new(tables[Pos][id]), Tag.new(true)])
 
 class Tagger:
 	extends Functor
@@ -63,7 +63,7 @@ class Tagger:
 	func rate() -> int: return PHYSIC
 	func update(_delta: float) -> void:
 		for subscriber in subscribers:
-			if tables[Pos][subscriber] >= 2.0: appearing.append([subscriber, Tag.new(true)])
+			if tables[Pos][subscriber] >= 2.0: requests.appearing.append([subscriber, Tag.new(true)])
 
 class Witness:
 	extends Functor

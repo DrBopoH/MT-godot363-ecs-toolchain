@@ -6,9 +6,7 @@ enum {PHYSIC, RENDER}
 var id: int = 0
 var subscribers: Array = []
 var tables: Dictionary = {}
-var dying: Array = []
-var appearing: Array = []
-var spawning: Array = []
+var requests: Requests
 
 
 func needs() -> Array: return []
