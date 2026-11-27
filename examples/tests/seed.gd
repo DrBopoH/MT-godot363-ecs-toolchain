@@ -1,0 +1,15 @@
+extends Node
+
+const suites: Array = [preload("../../source/tests/scheduler_test.gd")]
+
+
+func _ready() -> void:
+	var failed: int = 0
+	for suite in suites:
+		var instance: Reference = suite.new()
+		for method in instance.get_method_list():
+			if not method.name.begins_with("test_"): continue
+			var passed: bool = instance.call(method.name)
+			print(("ok   " if passed else "FAIL ") + method.name)
+			if not passed: failed+= 1
+	print("failed: %d" % failed)
