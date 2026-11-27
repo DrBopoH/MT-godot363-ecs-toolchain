@@ -35,4 +35,4 @@ func bind(system: Functor) -> void:
 	system.requests = composer.requests
 
 
-func input(_intent: int, _value) -> void: return
+func input(channel: int, intent: int, value) -> void: composer.requests.inputs.append([channel, intent, value])

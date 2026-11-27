@@ -7,3 +7,4 @@ extends Reference
 var spawning: Array = []
 var appearing: Array = []
 var dying: Array = []
+var inputs: Array = []

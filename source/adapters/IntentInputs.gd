@@ -8,16 +8,18 @@ const MOTION: int = -1
 
 var scheduler: Scheduler
 var bindings: Dictionary
+var channel: int
 
 
-func _init(_scheduler: Scheduler, _bindings: Dictionary) -> void:
+func _init(_scheduler: Scheduler, _bindings: Dictionary, _channel: int = 0) -> void:
 	scheduler = _scheduler
 	bindings = _bindings
+	channel = _channel
 
 
 func capture(event: InputEvent) -> void:
 	if event is InputEventMouseMotion:
-		for intent in bindings.get(MOTION, []): scheduler.input(intent, event.relative)
+		for intent in bindings.get(MOTION, []): scheduler.input(channel, intent, event.relative)
 	elif (event is InputEventKey and not event.echo) or event is InputEventMouseButton:
 		var code: int = event.button_index if event is InputEventMouseButton else event.scancode
-		for intent in bindings.get(code, []): scheduler.input(intent, event.pressed)
+		for intent in bindings.get(code, []): scheduler.input(channel, intent, event.pressed)

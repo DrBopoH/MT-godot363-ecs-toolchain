@@ -6,14 +6,14 @@ extends Reference
 class Recorder:
 	extends Scheduler
 	var heard: Array = []
-	func input(intent: int, value) -> void: heard.append([intent, value])
+	func input(channel: int, intent: int, value) -> void: heard.append([channel, intent, value])
 
 
 
 
 func test_one_stream_becomes_intents() -> bool:
 	var recorder: Recorder = Recorder.new()
-	var inputs: IntentInputs = IntentInputs.new(recorder, {KEY_W: [6], BUTTON_LEFT: [2, 7], IntentInputs.MOTION: [1]})
+	var inputs: IntentInputs = IntentInputs.new(recorder, {KEY_W: [6], BUTTON_LEFT: [2, 7], IntentInputs.MOTION: [1]}, 3)
 	var key: InputEventKey = InputEventKey.new()
 	key.scancode = KEY_W
 	key.pressed = true
@@ -34,4 +34,10 @@ func test_one_stream_becomes_intents() -> bool:
 	unbound.scancode = KEY_Q
 	unbound.pressed = true
 	inputs.capture(unbound)
-	return recorder.heard == [[6, true], [2, false], [7, false], [1, Vector2(3, -1)]]
+	return recorder.heard == [[3, 6, true], [3, 2, false], [3, 7, false], [3, 1, Vector2(3, -1)]]
+
+func test_input_queues_intents_for_the_tick() -> bool:
+	var scheduler: Scheduler = Scheduler.new()
+	scheduler.input(0, 6, true)
+	scheduler.input(2, 1, Vector2(1, 0))
+	return scheduler.composer.requests.inputs == [[0, 6, true], [2, 1, Vector2(1, 0)]]
