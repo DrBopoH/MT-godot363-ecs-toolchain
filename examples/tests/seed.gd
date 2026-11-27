@@ -3,7 +3,7 @@
 
 extends Node
 
-const suites: Array = [preload("SchedulerTest.gd"), preload("IntentInputsTest.gd"), preload("LatchTest.gd")]
+const suites: Array = [preload("SchedulerTest.gd"), preload("IntentInputsTest.gd"), preload("LatchTest.gd"), preload("ResolverTest.gd")]
 
 
 func _ready() -> void:
