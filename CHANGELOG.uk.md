@@ -6,8 +6,22 @@
 
 ## Не випущено
 
+Додано
+- Ввід шарами: адаптер `IntentInputs` приймає весь потік подій Godot і перетворює клавіші на наміри за біндами; `Scheduler.input(channel, intent, value)` ставить їх у чергу; `Controlled` пов'язує сутність із каналом керування (гравець, мережа, ШІ — однаково).
+- Provider `Latch`: маски `Held`, `Pressed`, `Released` і підсумовані за тік `Axes`; відпускання в тому ж тіку, що й натискання, переноситься на наступний.
+- `Resolver`: клік або затиск за маскою намірів (`Mask`, `Threshold`, `Durations`, `Clicked`, `Holding`).
+- Converter `DirectionFromIntents`, `Thrust`/`DirectThrust` зі `Speed`.
+- Бінди як blueprints із шарами: заводські в `res://`, зміни гравця в `user://`; `BlueprintSaver` записує blueprints; компоненти `Trigger` і `Bindings`.
+- Стенд `keyboard`: куб через увесь ланцюжок вводу.
 - README англійською, російською й українською; цей журнал змін.
 - Mozilla Public License 2.0: `LICENSE` і ліцензійна шапка в кожному скрипті.
+
+Змінено
+- Actuators працюють на фізичному тіку, ноди рухаються лише там; для плавного відображення увімкни в проєкті `physics/common/physics_interpolation`. `DirectTranslator` ставить нове тіло на місце і скидає його інтерполяцію в `enter`.
+- `BlueprintLoader` і `BlueprintSaver` — скрипти `tool`, працюють у редакторі.
+
+Застаріло
+- Частота `RENDER` і `Scheduler.render`: відображення з частотою кадру замінено інтерполяцією фізики. Залишені, доки не знайдеться реальне застосування.
 
 ## Build 2 alpha — Життя сутностей і blueprints (v1.a2.17)
 

@@ -7,4 +7,4 @@ extends Functor
 
 func needs() -> Array: return [Position, Proxy]
 
-func rate() -> int: return RENDER
+func rate() -> int: return PHYSIC

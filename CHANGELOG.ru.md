@@ -6,8 +6,22 @@
 
 ## Не выпущено
 
+Добавлено
+- Ввод слоями: адаптер `IntentInputs` принимает весь поток событий Godot и переводит клавиши в намерения по биндам; `Scheduler.input(channel, intent, value)` ставит их в очередь; `Controlled` связывает сущность с каналом управления (игрок, сеть, ИИ — одинаково).
+- Provider `Latch`: маски `Held`, `Pressed`, `Released` и суммированные за тик `Axes`; отпуск в том же тике, что и нажатие, переносится на следующий.
+- `Resolver`: клик или зажим по маске намерений (`Mask`, `Threshold`, `Durations`, `Clicked`, `Holding`).
+- Converter `DirectionFromIntents`, `Thrust`/`DirectThrust` со `Speed`.
+- Бинды как blueprints со слоями: заводские в `res://`, изменения игрока в `user://`; `BlueprintSaver` записывает blueprints; компоненты `Trigger` и `Bindings`.
+- Стенд `keyboard`: куб через всю цепочку ввода.
 - README на английском, русском и украинском; этот журнал изменений.
 - Mozilla Public License 2.0: `LICENSE` и лицензионная шапка в каждом скрипте.
+
+Изменено
+- Actuators работают на физическом тике, ноды двигаются только там; для плавного отображения включи в проекте `physics/common/physics_interpolation`. `DirectTranslator` ставит новое тело на место и сбрасывает его интерполяцию в `enter`.
+- `BlueprintLoader` и `BlueprintSaver` — скрипты `tool`, работают в редакторе.
+
+Устарело
+- Частота `RENDER` и `Scheduler.render`: отображение с частотой кадра заменено интерполяцией физики. Оставлены, пока не найдётся реальное применение.
 
 ## Build 2 alpha — Жизнь сущностей и blueprints (v1.a2.17)
 

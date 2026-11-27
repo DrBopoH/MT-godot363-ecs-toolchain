@@ -6,8 +6,22 @@ Versions follow the sky scheme `vR.sB.C`: `a` marks an alpha build, `B` is the b
 
 ## Unreleased
 
+Added
+- Layered input: `IntentInputs` adapter takes the whole Godot event stream and turns keys into intents by bindings; `Scheduler.input(channel, intent, value)` queues them; `Controlled` ties an entity to a control channel (player, network, AI alike).
+- `Latch` provider: `Held`, `Pressed`, `Released` bit masks and summed `Axes` per tick; a release in the same tick as its press is deferred.
+- `Resolver`: click or hold per intent mask (`Mask`, `Threshold`, `Durations`, `Clicked`, `Holding`).
+- `DirectionFromIntents` converter, `Thrust`/`DirectThrust` with `Speed`.
+- Bindings as layered blueprints: factory defaults in `res://`, player changes in `user://`; `BlueprintSaver` writes blueprints; `Trigger` and `Bindings` components.
+- Stand `keyboard`: the cube driven through the whole input chain.
 - README in English, Russian and Ukrainian; this changelog.
 - Mozilla Public License 2.0: `LICENSE` and a license header in every script.
+
+Changed
+- Actuators run on the physics tick, so nodes move only there; turn on `physics/common/physics_interpolation` in the project for smooth display. `DirectTranslator` places a new body and resets its interpolation on `enter`.
+- `BlueprintLoader` and `BlueprintSaver` are `tool` scripts and work in the editor.
+
+Deprecated
+- The `RENDER` rate and `Scheduler.render`: frame-rate display is replaced by physics interpolation. Kept until a real use appears.
 
 ## Build 2 alpha — Entity lifecycle and blueprints (v1.a2.17)
 

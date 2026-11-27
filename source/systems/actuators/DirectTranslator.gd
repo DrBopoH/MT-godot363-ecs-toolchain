@@ -9,3 +9,8 @@ func update(_delta: float) -> void:
 	var positions: Array = tables[Position]
 	var proxies: Array = tables[Proxy]
 	for subscriber in subscribers: proxies[subscriber].translation = positions[subscriber]
+
+func enter(entity: int) -> void:
+	var proxy: Spatial = tables[Proxy][entity]
+	proxy.translation = tables[Position][entity]
+	proxy.reset_physics_interpolation()
