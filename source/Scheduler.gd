@@ -34,7 +34,7 @@ func swap(position: GDScript, system: Functor) -> void:
 	bind(system)
 
 func bind(system: Functor) -> void:
-	for component in system.needs() + system.owns(): system.tables[component] = components.declare(component)
+	for component in system.needs() + system.owns() + system.uses(): system.tables[component] = components.declare(component)
 	system.dying = dying
 	system.appearing = appearing
 
@@ -71,5 +71,7 @@ func remove(id: int, component: GDScript) -> void:
 	components.table(component)[id] = null
 
 func kill(id: int) -> void:
-	for component in components.tables:
-		if components.tables[component][id] != null: remove(id, component)
+	for pipeline in pipelines.values():
+		for system in pipeline.systems:
+			if fits(system, id): unsubscribe(system, id)
+	for component in components.tables: components.tables[component][id] = null

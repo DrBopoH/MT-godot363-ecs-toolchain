@@ -43,6 +43,14 @@ class Reaper:
 		for subscriber in subscribers:
 			if tables[Pos][subscriber] >= 4.0: dying.append(subscriber)
 
+class Undertaker:
+	extends Functor
+	var seen: Array = []
+	func needs() -> Array: return [Tag]
+	func uses() -> Array: return [Pos]
+	func rate() -> int: return RENDER
+	func exit(id: int) -> void: seen.append([id, tables[Pos][id]])
+
 class Tagger:
 	extends Functor
 	func needs() -> Array: return [Pos]
@@ -130,3 +138,15 @@ func test_appearing_adds_after_tick_before_dying() -> bool:
 	var entity: int = scheduler.spawn([Pos.new(0.0)])
 	scheduler.physic(0.0)
 	return tagged.subscribers == [entity] and scheduler.components.table(Tag)[entity] == true
+
+func test_kill_exits_with_whole_entity_and_uses_does_not_subscribe() -> bool:
+	var scheduler: Scheduler = Scheduler.new()
+	var shift: Shift = Shift.new()
+	scheduler.open(Shift, shift, [Grav.new(0.0)])
+	var undertaker: Undertaker = Undertaker.new()
+	scheduler.open(Undertaker, undertaker, [])
+	var bare: int = scheduler.spawn([Pos.new(5.0)])
+	var tagged: int = scheduler.spawn([Pos.new(7.0), Tag.new(true)])
+	var subscribed: bool = undertaker.subscribers == [tagged]
+	scheduler.kill(tagged)
+	return subscribed and undertaker.seen == [[tagged, 7.0]] and shift.subscribers == [bare] and scheduler.components.table(Pos)[tagged] == null
