@@ -4,7 +4,7 @@
 extends Reference
 
 const DEFAULTS = preload("res://addons/MT-godot363-ecs-toolchain/content/settings/bindings.blueprint")
-const INTENTS: Dictionary = {"forward": 0, "back": 1, "left": 2, "right": 3, "fire": 4, "aim": 5, "look": 6}
+const INTENTS: Dictionary = {"forward": 0, "back": 1, "left": 2, "right": 3, "fire": 4, "aim": 5, "look": 6, "up": 7, "down": 8}
 const USER: String = "user://tests/bindings.blueprint"
 
 class Recorder:
@@ -43,7 +43,7 @@ func test_one_stream_becomes_intents() -> bool:
 	var motion: InputEventMouseMotion = InputEventMouseMotion.new()
 	motion.relative = Vector2(3, -1)
 	inputs.capture(motion)
-	press(inputs, KEY_Q)
+	press(inputs, KEY_Z)
 	return recorder.heard == [[3, 0, true], [3, 0, true], [3, 4, true], [3, 6, Vector2(3, -1)]]
 
 func test_user_layer_overrides_one_intent() -> bool:
