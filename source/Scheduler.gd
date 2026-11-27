@@ -39,6 +39,7 @@ func bind(system: Functor) -> void:
 	system.requests = requests
 
 func fits(system: Functor, id: int) -> bool:
+	if system.needs().empty(): return false
 	for component in system.needs():
 		if system.tables[component][id] == null: return false
 	return true
@@ -75,3 +76,4 @@ func kill(id: int) -> void:
 		for system in pipeline.systems:
 			if fits(system, id): unsubscribe(system, id)
 	for component in components.tables: components.tables[component][id] = null
+	components.release(id)

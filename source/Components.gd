@@ -4,6 +4,7 @@ extends Reference
 var capacity: int = 1024
 var count: int = 0
 var tables: Dictionary = {}
+var free: Array = []
 
 
 func declare(component: GDScript) -> Array:
@@ -18,6 +19,9 @@ func table(component: GDScript) -> Array:
 
 
 func spawn() -> int:
+	if not free.empty(): return free.pop_back()
 	var id: int = count
 	count+= 1
 	return id
+
+func release(id: int) -> void: free.append(id)

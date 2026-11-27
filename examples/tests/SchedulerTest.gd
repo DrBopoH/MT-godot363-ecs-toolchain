@@ -53,6 +53,8 @@ class Undertaker:
 
 class Emitter:
 	extends Functor
+	var exits: int = 0
+	func exit(_id: int) -> void: exits+= 1
 	func owns() -> Array: return [Pos]
 	func rate() -> int: return PHYSIC
 	func update(_delta: float) -> void: requests.spawning.append([Pos.new(tables[Pos][id]), Tag.new(true)])
@@ -166,3 +168,21 @@ func test_spawning_creates_entities_after_tick() -> bool:
 	scheduler.physic(0.0)
 	var born: int = scheduler.components.count - 1
 	return scheduler.components.count == before + 1 and tagged.subscribers == [born] and scheduler.components.table(Pos)[born] == 9.0
+
+func test_killed_ids_are_reused_clean() -> bool:
+	var scheduler: Scheduler = Scheduler.new()
+	var tagged: Tagged = Tagged.new()
+	scheduler.open(Tagged, tagged, [])
+	var first: int = scheduler.spawn([Pos.new(1.0), Tag.new(true)])
+	scheduler.kill(first)
+	var second: int = scheduler.spawn([Pos.new(2.0)])
+	return second == first and tagged.subscribers.empty() and scheduler.components.table(Tag)[second] == null and scheduler.components.table(Pos)[second] == 2.0
+
+func test_open_without_needs_subscribes_nobody() -> bool:
+	var scheduler: Scheduler = Scheduler.new()
+	scheduler.spawn([Pos.new(1.0)])
+	var emitter: Emitter = Emitter.new()
+	scheduler.open(Emitter, emitter, [Pos.new(0.0)])
+	var other: int = scheduler.spawn([Pos.new(2.0)])
+	scheduler.kill(other)
+	return emitter.subscribers.empty() and emitter.exits == 0
