@@ -33,3 +33,6 @@ func swap(position: GDScript, system: Functor) -> void:
 func bind(system: Functor) -> void:
 	for component in system.needs() + system.owns() + system.uses(): system.tables[component] = composer.components.declare(component)
 	system.requests = composer.requests
+
+
+func input(_intent: int, _value) -> void: return
