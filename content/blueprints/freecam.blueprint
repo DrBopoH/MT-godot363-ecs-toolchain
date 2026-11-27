@@ -1,0 +1,12 @@
+{
+	"Controlled": 0,
+	"Held": 0,
+	"Pressed": 0,
+	"Released": 0,
+	"Axes": {},
+	"Direction": [0, 0, 0],
+	"Speed": 4.0,
+	"Velocity": [0, 0, 0],
+	"Position": [0, 1.5, 4],
+	"Orientation": [0, 0, 0]
+}
