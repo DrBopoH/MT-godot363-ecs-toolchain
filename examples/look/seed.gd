@@ -42,4 +42,4 @@ func report() -> void:
 	$hud.text = "F1 interpolation: %s    F2 ticks: %d    Esc mouse" % ["on" if get_tree().physics_interpolation else "off", Engine.iterations_per_second]
 
 
-func _physics_process(delta: float) -> void: scheduler.physic(delta)
+func _physics_process(delta: float) -> void: scheduler.update(delta)

@@ -29,12 +29,12 @@ func test_tap_is_a_click() -> bool:
 	var rig: Array = rig()
 	var scheduler: Scheduler = rig[0]
 	scheduler.input(0, FIRE, true)
-	scheduler.physic(STEP)
+	scheduler.update(STEP)
 	var down: Array = read(scheduler, rig[1])
 	scheduler.input(0, FIRE, false)
-	scheduler.physic(STEP)
+	scheduler.update(STEP)
 	var up: Array = read(scheduler, rig[1])
-	scheduler.physic(STEP)
+	scheduler.update(STEP)
 	return down == [0, 0] and up == [1 << FIRE, 0] and read(scheduler, rig[1]) == [0, 0]
 
 func test_long_press_is_a_hold_not_a_click() -> bool:
@@ -43,10 +43,10 @@ func test_long_press_is_a_hold_not_a_click() -> bool:
 	scheduler.input(0, FIRE, true)
 	var trace: Array = []
 	for i in 4:
-		scheduler.physic(STEP)
+		scheduler.update(STEP)
 		trace.append(read(scheduler, rig[1])[1])
 	scheduler.input(0, FIRE, false)
-	scheduler.physic(STEP)
+	scheduler.update(STEP)
 	var bit: int = 1 << FIRE
 	return trace == [0, 0, bit, bit] and read(scheduler, rig[1]) == [0, 0]
 
@@ -55,16 +55,16 @@ func test_tap_in_one_tick_is_a_click_next_tick() -> bool:
 	var scheduler: Scheduler = rig[0]
 	scheduler.input(0, FIRE, true)
 	scheduler.input(0, FIRE, false)
-	scheduler.physic(STEP)
+	scheduler.update(STEP)
 	var first: Array = read(scheduler, rig[1])
-	scheduler.physic(STEP)
+	scheduler.update(STEP)
 	return first == [0, 0] and read(scheduler, rig[1]) == [1 << FIRE, 0]
 
 func test_intents_outside_the_mask_are_not_resolved() -> bool:
 	var rig: Array = rig()
 	var scheduler: Scheduler = rig[0]
 	scheduler.input(0, 2, true)
-	scheduler.physic(STEP)
+	scheduler.update(STEP)
 	scheduler.input(0, 2, false)
-	scheduler.physic(STEP)
+	scheduler.update(STEP)
 	return read(scheduler, rig[1]) == [0, 0]

@@ -25,4 +25,4 @@ func _ready() -> void:
 		Scene.new(preload("body.tscn"))
 	])
 
-func _physics_process(delta: float) -> void: scheduler.physic(delta)
+func _physics_process(delta: float) -> void: scheduler.update(delta)

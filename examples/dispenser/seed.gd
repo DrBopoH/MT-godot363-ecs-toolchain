@@ -18,4 +18,4 @@ func _ready() -> void:
 		Template.new(CRATE)
 	])
 
-func _physics_process(delta: float) -> void: scheduler.physic(delta)
+func _physics_process(delta: float) -> void: scheduler.update(delta)

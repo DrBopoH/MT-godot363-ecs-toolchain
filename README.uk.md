@@ -49,7 +49,7 @@ func _ready() -> void:
 	scheduler.open(Aging, Expiry.new(), [])
 	scheduler.composer.spawn(CRATE)
 
-func _physics_process(delta: float) -> void: scheduler.physic(delta)
+func _physics_process(delta: float) -> void: scheduler.update(delta)
 ```
 
 ```json

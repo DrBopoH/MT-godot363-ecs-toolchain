@@ -30,11 +30,11 @@ func test_held_intents_become_a_direction() -> bool:
 	var scheduler: Scheduler = rig[0]
 	scheduler.input(0, FORWARD, true)
 	scheduler.input(0, RIGHT, true)
-	scheduler.physic(0.1)
+	scheduler.update(0.1)
 	var both: Vector3 = direction(rig)
 	scheduler.input(0, RIGHT, false)
 	scheduler.input(0, UP, true)
-	scheduler.physic(0.1)
+	scheduler.update(0.1)
 	return both == Vector3(1, 0, -1) and direction(rig) == Vector3(0, 1, -1)
 
 func test_opposite_intents_cancel() -> bool:
@@ -43,15 +43,15 @@ func test_opposite_intents_cancel() -> bool:
 	scheduler.input(0, LEFT, true)
 	scheduler.input(0, RIGHT, true)
 	scheduler.input(0, BACK, true)
-	scheduler.physic(0.1)
+	scheduler.update(0.1)
 	return direction(rig) == Vector3(0, 0, 1)
 
 func test_direction_cannot_stick_after_release() -> bool:
 	var rig: Array = rig()
 	var scheduler: Scheduler = rig[0]
 	scheduler.input(0, FORWARD, true)
-	scheduler.physic(0.1)
+	scheduler.update(0.1)
 	scheduler.input(0, FORWARD, false)
 	scheduler.input(0, FORWARD, false)
-	scheduler.physic(0.1)
+	scheduler.update(0.1)
 	return direction(rig) == Vector3.ZERO

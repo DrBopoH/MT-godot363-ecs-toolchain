@@ -22,4 +22,4 @@ func _ready() -> void:
 
 func _unhandled_input(event: InputEvent) -> void: inputs.capture(event)
 
-func _physics_process(delta: float) -> void: scheduler.physic(delta)
+func _physics_process(delta: float) -> void: scheduler.update(delta)

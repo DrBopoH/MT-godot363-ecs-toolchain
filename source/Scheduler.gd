@@ -8,7 +8,7 @@ var pipeline: Pipeline = Pipeline.new()
 var composer: Composer = Composer.new(pipeline)
 
 
-func physic(delta: float) -> void:
+func update(delta: float) -> void:
 	pipeline.update(delta)
 	composer.flush()
 

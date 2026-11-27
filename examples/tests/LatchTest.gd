@@ -26,9 +26,9 @@ func test_press_and_hold_reach_only_their_channel() -> bool:
 	var rig: Array = rig()
 	var scheduler: Scheduler = rig[0]
 	scheduler.input(0, FORWARD, true)
-	scheduler.physic(0.0)
+	scheduler.update(0.0)
 	var first: Array = state(scheduler, rig[1])
-	scheduler.physic(0.0)
+	scheduler.update(0.0)
 	var second: Array = state(scheduler, rig[1])
 	var bit: int = 1 << FORWARD
 	return first == [bit, bit, 0] and second == [bit, 0, 0] and state(scheduler, rig[2]) == [0, 0, 0]
@@ -38,11 +38,11 @@ func test_release_in_the_same_tick_is_deferred() -> bool:
 	var scheduler: Scheduler = rig[0]
 	scheduler.input(0, FIRE, true)
 	scheduler.input(0, FIRE, false)
-	scheduler.physic(0.0)
+	scheduler.update(0.0)
 	var first: Array = state(scheduler, rig[1])
-	scheduler.physic(0.0)
+	scheduler.update(0.0)
 	var second: Array = state(scheduler, rig[1])
-	scheduler.physic(0.0)
+	scheduler.update(0.0)
 	var bit: int = 1 << FIRE
 	return first == [bit, bit, 0] and second == [0, 0, bit] and state(scheduler, rig[1]) == [0, 0, 0]
 
@@ -51,16 +51,16 @@ func test_axes_sum_within_a_tick_and_reset() -> bool:
 	var scheduler: Scheduler = rig[0]
 	scheduler.input(0, LOOK, Vector2(1, 0))
 	scheduler.input(0, LOOK, Vector2(2, -1))
-	scheduler.physic(0.0)
+	scheduler.update(0.0)
 	var first: Vector2 = scheduler.composer.components.tables[Axes][rig[1]][LOOK]
-	scheduler.physic(0.0)
+	scheduler.update(0.0)
 	return first == Vector2(3, -1) and scheduler.composer.components.tables[Axes][rig[1]].empty()
 
 func test_repeated_press_keeps_one_edge() -> bool:
 	var rig: Array = rig()
 	var scheduler: Scheduler = rig[0]
 	scheduler.input(0, FORWARD, true)
-	scheduler.physic(0.0)
+	scheduler.update(0.0)
 	scheduler.input(0, FORWARD, true)
-	scheduler.physic(0.0)
+	scheduler.update(0.0)
 	return state(scheduler, rig[1]) == [1 << FORWARD, 0, 0]
