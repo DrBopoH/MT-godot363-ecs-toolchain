@@ -1,10 +1,5 @@
 extends Spatial
 
-const Position = preload("position.gd")
-const Proxy = preload("proxy.gd")
-const Translator = preload("translator.gd")
-const DirectTranslator = preload("direct_translator.gd")
-
 var scheduler: Scheduler = Scheduler.new()
 
 

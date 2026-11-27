@@ -1,4 +1,5 @@
-extends "translator.gd"
+class_name DirectTranslator
+extends Translator
 
 
 func update(_delta: float) -> void:

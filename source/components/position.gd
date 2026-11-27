@@ -1,3 +1,4 @@
+class_name Position
 extends Reference
 
 var value: Vector3

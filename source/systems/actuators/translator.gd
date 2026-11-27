@@ -1,7 +1,5 @@
+class_name Translator
 extends Functor
-
-const Position = preload("position.gd")
-const Proxy = preload("proxy.gd")
 
 
 func needs() -> Array: return [Position, Proxy]
