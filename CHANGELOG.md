@@ -6,6 +6,8 @@ Versions follow the sky scheme `vR.sB.C`: `a` marks an alpha build, `B` is the b
 
 ## Unreleased
 
+## Build 3 alpha — Layered input and grabbing (v1.a3.18)
+
 Added
 - Layered input: `IntentInputs` adapter takes the whole Godot event stream and turns keys into intents by bindings; `Scheduler.input(channel, intent, value)` queues them; `Controlled` ties an entity to a control channel (player, network, AI alike).
 - `Latch` provider: `Held`, `Pressed`, `Released` bit masks and summed `Axes` per tick; a release in the same tick as its press is deferred.
