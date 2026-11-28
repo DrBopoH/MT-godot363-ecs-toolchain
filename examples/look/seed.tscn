@@ -1,0 +1,69 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://addons/MT-godot363-ecs-toolchain/examples/look/seed.gd" type="Script" id=1]
+
+[sub_resource type="CubeMesh" id=1]
+size = Vector3( 0.6, 0.6, 0.6 )
+
+[node name="seed" type="Spatial"]
+script = ExtResource( 1 )
+
+[node name="camera" type="Camera" parent="."]
+current = true
+
+[node name="light" type="DirectionalLight" parent="."]
+transform = Transform( 1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 3, 0 )
+
+[node name="hud" type="Label" parent="."]
+margin_left = 12.0
+margin_top = 12.0
+margin_right = 600.0
+margin_bottom = 40.0
+
+[node name="post0" type="MeshInstance" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 0, -6 )
+mesh = SubResource( 1 )
+
+[node name="post1" type="MeshInstance" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 0, -3 )
+mesh = SubResource( 1 )
+
+[node name="post2" type="MeshInstance" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 0, 0 )
+mesh = SubResource( 1 )
+
+[node name="post3" type="MeshInstance" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0, -6 )
+mesh = SubResource( 1 )
+
+[node name="post4" type="MeshInstance" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0, -3 )
+mesh = SubResource( 1 )
+
+[node name="post5" type="MeshInstance" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0, 0 )
+mesh = SubResource( 1 )
+
+[node name="post6" type="MeshInstance" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, -6 )
+mesh = SubResource( 1 )
+
+[node name="post7" type="MeshInstance" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, -3 )
+mesh = SubResource( 1 )
+
+[node name="post8" type="MeshInstance" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0 )
+mesh = SubResource( 1 )
+
+[node name="post9" type="MeshInstance" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0, -6 )
+mesh = SubResource( 1 )
+
+[node name="post10" type="MeshInstance" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0, -3 )
+mesh = SubResource( 1 )
+
+[node name="post11" type="MeshInstance" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0, 0 )
+mesh = SubResource( 1 )

@@ -1,3 +1,6 @@
+# This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+# If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
+
 class_name Components
 extends Reference
 
@@ -6,7 +9,6 @@ var count: int = 0
 var tables: Dictionary = {}
 var free: Array = []
 var links: Array = []
-var events: Array = []
 
 
 func declare(component: GDScript) -> Array:
@@ -15,7 +17,6 @@ func declare(component: GDScript) -> Array:
 		table.resize(capacity)
 		tables[component] = table
 		if component.get_base_script() == Link: links.append(component)
-		if component.get_base_script() == Event: events.append(component)
 	return tables[component]
 
 func table(component: GDScript) -> Array:

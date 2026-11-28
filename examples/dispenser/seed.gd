@@ -1,3 +1,6 @@
+# This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+# If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
+
 extends Spatial
 
 const CRATE = preload("res://addons/MT-godot363-ecs-toolchain/content/blueprints/crate.blueprint")
@@ -15,6 +18,4 @@ func _ready() -> void:
 		Template.new(CRATE)
 	])
 
-func _physics_process(delta: float) -> void: scheduler.physic(delta)
-
-func _process(delta: float) -> void: scheduler.render(delta)
+func _physics_process(delta: float) -> void: scheduler.update(delta)
