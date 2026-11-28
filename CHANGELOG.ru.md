@@ -13,15 +13,20 @@
 - Converter `DirectionFromIntents`, `Thrust`/`DirectThrust` со `Speed`.
 - Бинды как blueprints со слоями: заводские в `res://`, изменения игрока в `user://`; `BlueprintSaver` записывает blueprints; компоненты `Trigger` и `Bindings`.
 - Стенд `keyboard`: куб через всю цепочку ввода.
+- Обзор мышью: `Orientation`, `Looking`/`RelativeEuler` с `Sensitivity` и `PitchLimits` (градусы), `Rotator`/`DirectRotator`; `LocalThrust` двигает в осях взгляда без вертикали. Стенд `look`.
+- События как обычные сущности: компонент `Transient` и `Transience`/`OneTick`, убивающая подписчиков в конце тика; ставится последней в пайплайне.
+- Захват по курсору: хват — сущность со ссылками `Holder` и `Holds`, `Grip`, `Reach` и `Position`. `Picking`/`RaycastPicker` пускает луч через курсор, `Pointing`/`CursorAnchor` держит хват на луче курсора, `Springing` тянет тело пружиной с критическим демпфированием (`Strength`): `SpringFollow` силой, `ImpulseSpringFollow` импульсом. Стенд `grab`.
 - README на английском, русском и украинском; этот журнал изменений.
 - Mozilla Public License 2.0: `LICENSE` и лицензионная шапка в каждом скрипте.
 
 Изменено
 - Actuators работают на физическом тике, ноды двигаются только там; для плавного отображения включи в проекте `physics/common/physics_interpolation`. `DirectTranslator` ставит новое тело на место и сбрасывает его интерполяцию в `enter`.
 - `BlueprintLoader` и `BlueprintSaver` — скрипты `tool`, работают в редакторе.
+- `Scheduler.physic` теперь `Scheduler.update`.
 
 Удалено
 - Частота `RENDER`, `rate()` в контракте системы и `Scheduler.render`: один пайплайн на физическом тике; плавность отображения даёт интерполяция физики (проверка обзора: 20 тиков с интерполяцией лучше 60 без неё). Ломающее: семейства без `rate()`, зёрна без `_process`.
+- Базовый класс `Event`: событие — сущность с `Transient`.
 
 ## Build 2 alpha — Жизнь сущностей и blueprints (v1.a2.17)
 

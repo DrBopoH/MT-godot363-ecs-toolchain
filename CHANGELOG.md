@@ -13,15 +13,20 @@ Added
 - `DirectionFromIntents` converter, `Thrust`/`DirectThrust` with `Speed`.
 - Bindings as layered blueprints: factory defaults in `res://`, player changes in `user://`; `BlueprintSaver` writes blueprints; `Trigger` and `Bindings` components.
 - Stand `keyboard`: the cube driven through the whole input chain.
+- Mouse look: `Orientation`, `Looking`/`RelativeEuler` with `Sensitivity` and `PitchLimits` (degrees), `Rotator`/`DirectRotator`; `LocalThrust` moves in the view axes without the vertical. Stand `look`.
+- Events as ordinary entities: `Transient` component and `Transience`/`OneTick`, which kills its subscribers at the end of the tick; put it last in the pipeline.
+- Grabbing by cursor: a grip is an entity with `Holder` and `Holds` links, `Grip`, `Reach` and `Position`. `Picking`/`RaycastPicker` casts a ray through the cursor, `Pointing`/`CursorAnchor` keeps the grip on the cursor ray, `Springing` pulls the body with a critically damped spring (`Strength`): `SpringFollow` by force, `ImpulseSpringFollow` by impulse. Stand `grab`.
 - README in English, Russian and Ukrainian; this changelog.
 - Mozilla Public License 2.0: `LICENSE` and a license header in every script.
 
 Changed
 - Actuators run on the physics tick, so nodes move only there; turn on `physics/common/physics_interpolation` in the project for smooth display. `DirectTranslator` places a new body and resets its interpolation on `enter`.
 - `BlueprintLoader` and `BlueprintSaver` are `tool` scripts and work in the editor.
+- `Scheduler.physic` is now `Scheduler.update`.
 
 Removed
 - The `RENDER` rate, `rate()` in the system contract and `Scheduler.render`: one pipeline on the physics tick; smooth display comes from physics interpolation (a look test showed 20 ticks with interpolation beat 60 without). Breaking: families drop `rate()`, seeds drop `_process`.
+- `Event` base class: an event is an entity with `Transient`.
 
 ## Build 2 alpha — Entity lifecycle and blueprints (v1.a2.17)
 
