@@ -7,6 +7,22 @@ Versions follow the sky scheme `vR.sB.C`: `a` marks an alpha build, `B` is the b
 ## Unreleased
 
 Added
+- Networking: `NetId` marks an entity for replication; `NetSend`/`NetSnapshotSend` and `NetReceive`/`NetSnapshotReceive` replicate the components listed in `NetFields` through the `NetWire` boundary (appearance and removal reliable, values unreliable, links translated, late joiners get everything).
+- Network adapters: `NetLink` pumps a `NetworkedMultiplayerPeer` (ENet, WebSocket…), `NetHost` admits peers by ticket and turns their intents into `Scheduler.input`, releasing held keys on disconnect; `NetGuest` sends intents and the ticket. `NetTicket` contract and `HMACTicket` (HMAC-SHA256).
+- Stand `net`: one server and several clients on one machine.
+- `NetGuest.departed` reports a lost or unreachable host, so the project can react.
+
+Changed
+- `IntentInputs` writes into any sink with `input(channel, intent, value)` — `Scheduler` or `NetGuest`.
+- `Scheduler.open` sets a system's parameters before binding, so its contract can depend on them.
+
+Fixed
+- Adding a component an entity already has no longer subscribes systems twice.
+- Entities spawned from one blueprint no longer share mutable values.
+
+## Build 3 alpha — Layered input and grabbing (v1.a3.18)
+
+Added
 - Layered input: `IntentInputs` adapter takes the whole Godot event stream and turns keys into intents by bindings; `Scheduler.input(channel, intent, value)` queues them; `Controlled` ties an entity to a control channel (player, network, AI alike).
 - `Latch` provider: `Held`, `Pressed`, `Released` bit masks and summed `Axes` per tick; a release in the same tick as its press is deferred.
 - `Resolver`: click or hold per intent mask (`Mask`, `Threshold`, `Durations`, `Clicked`, `Holding`).

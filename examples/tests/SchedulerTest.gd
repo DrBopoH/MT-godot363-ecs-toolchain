@@ -257,3 +257,11 @@ func test_double_death_frees_the_id_once() -> bool:
 	var first: int = scheduler.composer.spawn([Pos.new(1.0)])
 	var second: int = scheduler.composer.spawn([Pos.new(2.0)])
 	return first == entity and second != entity
+
+func test_add_present_component_overwrites_without_resubscribe() -> bool:
+	var scheduler: Scheduler = Scheduler.new()
+	var shift: Shift = Shift.new()
+	scheduler.open(Shift, shift, [Grav.new(2.0)])
+	var body: int = scheduler.composer.spawn([Pos.new(0.0), Pos.new(5.0)])
+	scheduler.update(0.1)
+	return shift.subscribers == [body] and scheduler.composer.components.tables[Pos][body] == 7.0

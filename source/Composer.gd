@@ -47,7 +47,10 @@ func spawn(values) -> int:
 
 func add(id: int, component: Reference) -> void:
 	var key: GDScript = component.get_script()
-	components.declare(key)[id] = component.value
+	var table: Array = components.declare(key)
+	var present: bool = table[id] != null
+	table[id] = component.value
+	if present: return
 	for system in pipeline.systems:
 		if system.needs().has(key) and fits(system, id): subscribe(system, id)
 
