@@ -3,7 +3,7 @@
 
 extends Reference
 
-enum {APPEAR, STATE, VANISH, JOIN}
+enum {APPEAR, STATE, VANISH, JOIN, INPUT}
 enum {INBOX, OUTBOX}
 enum {TARGET, RELIABLE, MESSAGES}
 
@@ -19,6 +19,11 @@ class Pos:
 	func _init(_value: float) -> void: value = _value
 
 class Bang:
+	extends Reference
+	var value: float
+	func _init(_value: float) -> void: value = _value
+
+class Way:
 	extends Reference
 	var value: float
 	func _init(_value: float) -> void: value = _value
@@ -50,7 +55,7 @@ class Publisher:
 	var events: Array = []
 	func needs() -> Array: return [NetId]
 	func owns() -> Array: return [Wire, Counter, Replicates]
-	func uses() -> Array: return [Pos, Bang, Holds, Transient]
+	func uses() -> Array: return [Pos, Bang, Holds, Transient, Way]
 	func enter(id: int) -> void:
 		tables[NetId][id] = tables[Counter][self.id]
 		tables[Counter][self.id]+= 1
@@ -86,7 +91,7 @@ class Receiver:
 	extends Functor
 	func needs() -> Array: return [NetId]
 	func owns() -> Array: return [Wire, Index, Replicates]
-	func uses() -> Array: return [Pos, Bang, Holds, Transient]
+	func uses() -> Array: return [Pos, Bang, Holds, Transient, Way]
 	func enter(id: int) -> void: tables[Index][self.id][tables[NetId][id]] = id
 	func exit(id: int) -> void: tables[Index][self.id].erase(tables[NetId][id])
 	func update(_delta: float) -> void:
@@ -145,21 +150,73 @@ class Fire:
 
 
 
+class Route:
+	extends Reference
+	var scheduler: Scheduler
+	var wire: Array
+	var held: Dictionary = {}
+	func _init(_scheduler: Scheduler, _wire: Array) -> void:
+		scheduler = _scheduler
+		wire = _wire
+	func joined(peer: int) -> void:
+		held[peer] = {}
+		wire[INBOX].append([[JOIN, peer]])
+	func left(peer: int) -> void:
+		for intent in held[peer]: scheduler.input(peer, intent, false)
+		held.erase(peer)
+	func deliver(peer: int, messages: Array) -> void:
+		var rest: Array = []
+		for message in messages:
+			if message[0] != INPUT:
+				rest.append(message)
+				continue
+			if typeof(message[2]) == TYPE_BOOL:
+				if message[2]: held[peer][message[1]] = true
+				else: held[peer].erase(message[1])
+			scheduler.input(peer, message[1], message[2])
+		if not rest.empty(): wire[INBOX].append(rest)
+
+class Uplink:
+	extends Reference
+	var wire: Array
+	var batch: Array = []
+	func _init(_wire: Array) -> void: wire = _wire
+	func input(_channel: int, intent: int, value) -> void:
+		if batch.empty(): wire[OUTBOX].append([1, true, batch])
+		batch.append([INPUT, intent, value])
+	func sent() -> void: batch = []
+
+class Mover:
+	extends Functor
+	func needs() -> Array: return [Held, Way]
+	func update(_delta: float) -> void:
+		for subscriber in subscribers:
+			if tables[Held][subscriber] & 1: tables[Way][subscriber]+= 1.0
+
 class Loopback:
 	extends Reference
+	var route: Route
 	var server: Array
 	var clients: Dictionary = {}
 	var late: Dictionary = {}
 	var sent: int = 0
 	var lossy: bool
-	func _init(_server: Array, _lossy: bool) -> void:
-		server = _server
+	func _init(_route: Route, _lossy: bool) -> void:
+		route = _route
+		server = route.wire
 		lossy = _lossy
 	func connect_peer(peer: int, wire: Array) -> void:
 		clients[peer] = wire
 		late[peer] = []
-		server[INBOX].append([[JOIN, peer]])
+		route.joined(peer)
+	func disconnect_peer(peer: int) -> void:
+		clients.erase(peer)
+		late.erase(peer)
+		route.left(peer)
 	func pump() -> void:
+		for peer in clients:
+			for packet in clients[peer][OUTBOX]: route.deliver(peer, packet[MESSAGES])
+			clients[peer][OUTBOX].clear()
 		for peer in clients: clients[peer][INBOX]+= late[peer]
 		for peer in late: late[peer] = []
 		for packet in server[OUTBOX]:
@@ -176,14 +233,21 @@ class Socket:
 	extends Reference
 	var peer: NetworkedMultiplayerPeer
 	var wire: Array
-	func _init(_peer: NetworkedMultiplayerPeer, _wire: Array) -> void:
+	var route: Route
+	func _init(_peer: NetworkedMultiplayerPeer, _wire: Array, _route: Route) -> void:
 		peer = _peer
 		wire = _wire
-		peer.connect("peer_connected", self, "joined")
-	func joined(id: int) -> void: wire[INBOX].append([[JOIN, id]])
+		route = _route
+		if route != null:
+			peer.connect("peer_connected", route, "joined")
+			peer.connect("peer_disconnected", route, "left")
 	func pump() -> void:
 		peer.poll()
-		while peer.get_available_packet_count() > 0: wire[INBOX].append(bytes2var(peer.get_packet()))
+		while peer.get_available_packet_count() > 0:
+			var sender: int = peer.get_packet_peer()
+			var messages: Array = bytes2var(peer.get_packet())
+			if route != null: route.deliver(sender, messages)
+			else: wire[INBOX].append(messages)
 		for packet in wire[OUTBOX]:
 			peer.set_target_peer(packet[TARGET])
 			peer.transfer_mode = NetworkedMultiplayerPeer.TRANSFER_MODE_RELIABLE if packet[RELIABLE] else NetworkedMultiplayerPeer.TRANSFER_MODE_UNRELIABLE_ORDERED
@@ -201,29 +265,33 @@ func host(lossy: bool) -> void:
 	server = Scheduler.new()
 	clients = []
 	var wire: Array = [[], []]
+	server.open(Intention, Latch.new(), [])
 	server.open(Fire, Fire.new(), [Counter.new(0)])
 	server.open(Drift, Drift.new(), [])
+	server.open(Mover, Mover.new(), [])
 	server.open(Transience, OneTick.new(), [])
-	server.open(Publisher, Publisher.new(), [Wire.new(wire), Counter.new(1), Replicates.new([Pos, Bang, Holds, Transient])])
-	loop = Loopback.new(wire, lossy)
+	server.open(Publisher, Publisher.new(), [Wire.new(wire), Counter.new(1), Replicates.new([Pos, Bang, Holds, Transient, Way])])
+	loop = Loopback.new(Route.new(server, wire), lossy)
 
 func join() -> Dictionary:
 	var client: Scheduler = Scheduler.new()
 	var wire: Array = [[], []]
 	var receiver: Receiver = Receiver.new()
 	var heard: Heard = Heard.new()
-	client.open(Receiver, receiver, [Wire.new(wire), Index.new({}), Replicates.new([Pos, Bang, Holds, Transient])])
+	client.open(Receiver, receiver, [Wire.new(wire), Index.new({}), Replicates.new([Pos, Bang, Holds, Transient, Way])])
 	client.open(Heard, heard, [])
-	var side: Dictionary = {"scheduler": client, "receiver": receiver, "heard": heard}
+	var side: Dictionary = {"scheduler": client, "receiver": receiver, "heard": heard, "uplink": Uplink.new(wire), "peer": clients.size() + 2}
 	clients.append(side)
-	loop.connect_peer(clients.size() + 1, wire)
+	loop.connect_peer(side.peer, wire)
 	return side
 
 func tick(times: int) -> void:
 	for i in times:
 		server.update(0.1)
 		loop.pump()
-		for side in clients: side.scheduler.update(0.1)
+		for side in clients:
+			side.uplink.sent()
+			side.scheduler.update(0.1)
 
 func net(entity: int) -> int:
 	return server.composer.components.tables[NetId][entity]
@@ -318,3 +386,36 @@ func test_late_join_gets_everything() -> bool:
 	tick(3)
 	var tables: Dictionary = late.scheduler.composer.components.tables
 	return late.receiver.subscribers.size() == early.receiver.subscribers.size() and tables[Holds][replica(late, grip)] == replica(late, crate) and late.heard.heard.empty()
+
+func pilot(side: Dictionary) -> int:
+	return server.composer.spawn([Way.new(0.0), NetId.new(0), Controlled.new(side.peer), Held.new(0), Pressed.new(0), Released.new(0), Axes.new({})])
+
+func test_intents_drive_server_from_client() -> bool:
+	host(true)
+	var side: Dictionary = join()
+	var other: Dictionary = join()
+	var car: int = pilot(side)
+	var stranger: int = pilot(other)
+	tick(3)
+	side.uplink.input(0, 0, true)
+	tick(5)
+	var moving: float = side.scheduler.composer.components.tables[Way][replica(side, car)]
+	side.uplink.input(0, 0, false)
+	tick(3)
+	var stopped: float = server.composer.components.tables[Way][car]
+	tick(3)
+	return moving > 0.0 and server.composer.components.tables[Way][car] == stopped and server.composer.components.tables[Way][stranger] == 0.0
+
+func test_disconnect_releases_held_intents() -> bool:
+	host(false)
+	var side: Dictionary = join()
+	var car: int = pilot(side)
+	tick(2)
+	side.uplink.input(0, 0, true)
+	tick(3)
+	loop.disconnect_peer(side.peer)
+	clients.erase(side)
+	tick(2)
+	var stopped: float = server.composer.components.tables[Way][car]
+	tick(3)
+	return stopped > 0.0 and server.composer.components.tables[Way][car] == stopped
