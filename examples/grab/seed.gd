@@ -3,26 +3,29 @@
 
 extends Spatial
 
+const BINDINGS = preload("res://addons/MT-godot363-ecs-toolchain/content/settings/bindings.blueprint")
+const INTENTS: Dictionary = {"forward": 0, "back": 1, "left": 2, "right": 3, "fire": 4, "aim": 5, "look": 6, "up": 7, "down": 8}
+
 var scheduler: Scheduler = Scheduler.new()
+var inputs: IntentInputs = IntentInputs.new(scheduler, INTENTS, BINDINGS, "user://settings/bindings.blueprint")
 
 
 func _ready() -> void:
+	scheduler.open(Intention, Latch.new(), [])
+	scheduler.open(Picking, RaycastPicker.new(), [Trigger.new(4)])
+	scheduler.open(Pointing, CursorAnchor.new(), [])
+	scheduler.open(Springing, SpringFollow.new(), [Strength.new(25.0)])
+	scheduler.open(Conversion, DirectionFromIntents.new(), [Directions.new([3, 2, 7, 8, 0, 1])])
+	scheduler.open(Thrust, DirectThrust.new(), [])
 	scheduler.open(Movement, LinearMovement.new(), [])
-	scheduler.open(Following, AnchorFollow.new(), [])
-	scheduler.open(Aging, Expiry.new(), [])
-	scheduler.open(Embodiment, Instancer.new(), [Root.new(self)])
 	scheduler.open(Translator, DirectTranslator.new(), [])
-	var anchor: int = scheduler.composer.spawn([
-		Position.new(Vector3(-2, 0, -6)),
-		Velocity.new(Vector3(1, 0, 0)),
-		Lifetime.new(3.0),
-		Scene.new(preload("anchor.tscn"))
-	])
 	scheduler.composer.spawn([
-		Position.new(Vector3(-2, -1.5, -6)),
-		Target.new(anchor),
-		Offset.new(Vector3(0, -1.5, 0)),
-		Scene.new(preload("body.tscn"))
+		Controlled.new(0), Held.new(0), Pressed.new(0), Released.new(0), Axes.new({}),
+		Direction.new(Vector3.ZERO), Speed.new(4.0), Velocity.new(Vector3.ZERO),
+		Position.new($camera.translation), Proxy.new($camera)
 	])
+	for body in $bodies.get_children(): scheduler.composer.spawn([Proxy.new(body)])
+
+func _unhandled_input(event: InputEvent) -> void: inputs.capture(event)
 
 func _physics_process(delta: float) -> void: scheduler.update(delta)
