@@ -5,7 +5,7 @@ class_name SpringFollow
 extends Springing
 
 
-func update(delta: float) -> void:
+func update(_delta: float) -> void:
 	var strength: float = tables[Strength][id]
 	for subscriber in subscribers:
 		var body: RigidBody = tables[Proxy][tables[Holds][subscriber]]
@@ -14,4 +14,4 @@ func update(delta: float) -> void:
 		var k: float = body.mass*strength
 		var c: float = 2.0*sqrt(body.mass*k)
 		var velocity: Vector3 = body.linear_velocity + body.angular_velocity.cross(arm)
-		body.apply_impulse(arm, ((tables[Position][subscriber] - contact)*k - velocity*c)*delta)
+		body.add_force((tables[Position][subscriber] - contact)*k - velocity*c, arm)
