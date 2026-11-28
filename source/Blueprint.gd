@@ -16,4 +16,7 @@ func _iter_next(_state) -> bool:
 	cursor+= 1
 	return cursor < carriers.size()
 
-func _iter_get(_state): return carriers[cursor]
+func _iter_get(_state):
+	var carrier = carriers[cursor]
+	if typeof(carrier.value) in [TYPE_ARRAY, TYPE_DICTIONARY]: return carrier.get_script().new(carrier.value.duplicate(true))
+	return carrier

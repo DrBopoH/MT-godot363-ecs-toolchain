@@ -14,13 +14,13 @@ const MOUSE: Dictionary = {
 	"Motion": MOTION
 }
 
-var scheduler: Scheduler
+var sink: Object
 var bindings: Dictionary = {}
 var channel: int
 
 
-func _init(_scheduler: Scheduler, intents: Dictionary, defaults: Blueprint, overrides: String, _channel: int = 0) -> void:
-	scheduler = _scheduler
+func _init(_sink: Object, intents: Dictionary, defaults: Blueprint, overrides: String, _channel: int = 0) -> void:
+	sink = _sink
 	channel = _channel
 	var keys: Dictionary = layer(defaults)
 	if ResourceLoader.exists(overrides):
@@ -39,7 +39,7 @@ func layer(blueprint: Blueprint) -> Dictionary:
 
 func capture(event: InputEvent) -> void:
 	if event is InputEventMouseMotion:
-		for intent in bindings.get(MOTION, []): scheduler.input(channel, intent, event.relative)
+		for intent in bindings.get(MOTION, []): sink.input(channel, intent, event.relative)
 	elif (event is InputEventKey and not event.echo) or event is InputEventMouseButton:
 		var code: int = event.button_index if event is InputEventMouseButton else event.scancode
-		for intent in bindings.get(code, []): scheduler.input(channel, intent, event.pressed)
+		for intent in bindings.get(code, []): sink.input(channel, intent, event.pressed)

@@ -15,8 +15,9 @@ func update(delta: float) -> void:
 
 func open(position: GDScript, system: Functor, values) -> void:
 	system.id = composer.components.spawn()
-	bind(system)
+	own(system)
 	for component in values: system.tables[component.get_script()][system.id] = component.value
+	bind(system)
 	composer.adopt(system)
 	pipeline.open(position, system)
 
@@ -26,8 +27,12 @@ func swap(position: GDScript, system: Functor) -> void:
 	system.subscribers = old.subscribers
 	bind(system)
 
+func own(system: Functor) -> void:
+	for component in system.owns(): system.tables[component] = composer.components.declare(component)
+
 func bind(system: Functor) -> void:
-	for component in system.needs() + system.owns() + system.uses(): system.tables[component] = composer.components.declare(component)
+	own(system)
+	for component in system.needs() + system.uses(): system.tables[component] = composer.components.declare(component)
 	system.requests = composer.requests
 
 
