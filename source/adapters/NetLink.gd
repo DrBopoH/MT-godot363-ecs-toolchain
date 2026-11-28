@@ -22,6 +22,7 @@ func pump() -> void:
 	while peer.get_available_packet_count() > 0:
 		var sender: int = peer.get_packet_peer()
 		end.received(sender, bytes2var(peer.get_packet()))
+	if peer.get_connection_status() != NetworkedMultiplayerPeer.CONNECTION_CONNECTED: return
 	end.commit()
 	var outbox: Array = end.wire[NetWire.OUTBOX]
 	for packet in outbox:
