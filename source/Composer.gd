@@ -7,16 +7,12 @@ extends Reference
 var components: Components = Components.new()
 var requests: Requests = Requests.new()
 var pipeline: Pipeline
-var expiring: Array = []
 
 
 func _init(_pipeline: Pipeline) -> void: pipeline = _pipeline
 
 
 func flush() -> void:
-	var expired: Array = expiring
-	expiring = []
-	for id in expired: kill(id)
 	for values in requests.spawning: spawn(values)
 	requests.spawning.clear()
 	for entry in requests.appearing: add(entry[0], entry[1])
@@ -52,7 +48,6 @@ func spawn(values) -> int:
 func add(id: int, component: Reference) -> void:
 	var key: GDScript = component.get_script()
 	components.declare(key)[id] = component.value
-	if components.events.has(key) and not expiring.has(id): expiring.append(id)
 	for system in pipeline.systems:
 		if system.needs().has(key) and fits(system, id): subscribe(system, id)
 

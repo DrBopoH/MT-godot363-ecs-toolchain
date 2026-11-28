@@ -30,7 +30,7 @@ class Chase:
 	func exit(id: int) -> void: released.append([id, tables[Pos][tables[Aim][id]]])
 
 class Bang:
-	extends Event
+	extends Reference
 	var value: float
 	func _init(_value: float) -> void: value = _value
 
@@ -45,7 +45,7 @@ class Shooter:
 	extends Functor
 	func owns() -> Array: return [Pos]
 	func update(_delta: float) -> void:
-		if tables[Pos][id] == 0.0: requests.spawning.append([Bang.new(7.0)])
+		if tables[Pos][id] == 0.0: requests.spawning.append([Bang.new(7.0), Transient.new(true)])
 		tables[Pos][id]+= 1.0
 
 class Shift:
@@ -240,6 +240,7 @@ func test_events_live_exactly_one_tick() -> bool:
 	var hearer: Hearer = Hearer.new()
 	scheduler.open(Shooter, Shooter.new(), [Pos.new(0.0)])
 	scheduler.open(Hearer, hearer, [])
+	scheduler.open(Transience, OneTick.new(), [])
 	scheduler.update(0.0)
 	var born: bool = hearer.subscribers.size() == 1 and hearer.heard.empty()
 	scheduler.update(0.0)
