@@ -5,6 +5,7 @@ class_name NetGuest
 extends Reference
 
 signal refused(peer)
+signal departed(peer)
 
 var wire: Array
 var token: String
@@ -19,7 +20,7 @@ func _init(_wire: Array, _token: String) -> void:
 func joined(peer: int) -> void:
 	if peer == NetWire.HOST: wire[NetWire.OUTBOX].append([NetWire.HOST, true, [[NetWire.TICKET, token]]])
 
-func left(_peer: int) -> void: return
+func left(peer: int) -> void: emit_signal("departed", peer)
 
 
 func received(_peer: int, messages: Array) -> void: wire[NetWire.INBOX].append(messages)

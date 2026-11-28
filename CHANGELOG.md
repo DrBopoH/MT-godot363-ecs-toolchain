@@ -10,6 +10,7 @@ Added
 - Networking: `NetId` marks an entity for replication; `NetSend`/`NetSnapshotSend` and `NetReceive`/`NetSnapshotReceive` replicate the components listed in `NetFields` through the `NetWire` boundary (appearance and removal reliable, values unreliable, links translated, late joiners get everything).
 - Network adapters: `NetLink` pumps a `NetworkedMultiplayerPeer` (ENet, WebSocket…), `NetHost` admits peers by ticket and turns their intents into `Scheduler.input`, releasing held keys on disconnect; `NetGuest` sends intents and the ticket. `NetTicket` contract and `HMACTicket` (HMAC-SHA256).
 - Stand `net`: one server and several clients on one machine.
+- `NetGuest.departed` reports a lost or unreachable host, so the project can react.
 
 Changed
 - `IntentInputs` writes into any sink with `input(channel, intent, value)` — `Scheduler` or `NetGuest`.

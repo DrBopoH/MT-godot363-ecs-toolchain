@@ -13,6 +13,8 @@ func _init(_peer: NetworkedMultiplayerPeer, _end: Reference) -> void:
 	end = _end
 	peer.connect("peer_connected", end, "joined")
 	peer.connect("peer_disconnected", end, "left")
+	peer.connect("server_disconnected", end, "left", [NetWire.HOST])
+	peer.connect("connection_failed", end, "left", [NetWire.HOST])
 	end.connect("refused", peer, "disconnect_peer")
 
 

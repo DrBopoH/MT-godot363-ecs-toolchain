@@ -10,6 +10,7 @@
 - Мережа: `NetId` позначає сутність для реплікації; `NetSend`/`NetSnapshotSend` і `NetReceive`/`NetSnapshotReceive` переносять компоненти з `NetFields` через межу `NetWire` (поява і зникнення — надійно, значення — швидко, посилання перекладаються, хто ввійшов посеред гри, отримує все).
 - Мережеві адаптери: `NetLink` опитує `NetworkedMultiplayerPeer` (ENet, WebSocket…), `NetHost` допускає пірів за квитком і перетворює їхні наміри на `Scheduler.input`, відпускаючи затиснуті кнопки при відключенні; `NetGuest` надсилає наміри й квиток. Контракт `NetTicket` і `HMACTicket` (HMAC-SHA256).
 - Стенд `net`: сервер і кілька клієнтів на одній машині.
+- `NetGuest.departed` повідомляє про втрату або недоступність хоста, щоб проєкт міг відреагувати.
 
 Змінено
 - `IntentInputs` пише в будь-який приймач з `input(channel, intent, value)` — `Scheduler` або `NetGuest`.

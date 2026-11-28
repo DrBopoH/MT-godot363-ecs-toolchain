@@ -289,3 +289,10 @@ func test_unadmitted_intents_ignored() -> bool:
 	side.guest.input(0, 0, true)
 	tick(4)
 	return served(Way, car) == 0.0
+
+func test_guest_reports_host_departure() -> bool:
+	var guest: NetGuest = NetGuest.new([[], []], "anyone")
+	guest.connect("departed", self, "on_refused")
+	refused = []
+	guest.left(NetWire.HOST)
+	return refused == [NetWire.HOST]
